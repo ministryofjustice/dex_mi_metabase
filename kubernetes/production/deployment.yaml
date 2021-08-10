@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: webapp
-          image: metabase/metabase:latest
+          image: metabase/metabase:v0.40.2
           imagePullPolicy: IfNotPresent
           env:
           - name: MB_DB_TYPE
@@ -31,6 +31,11 @@ spec:
               secretKeyRef:
                 name: dex-mi-production-metabase-rds-output
                 key: url
+          envFrom:
+            - configMapRef:
+                name: environment-variables
+            - secretRef:
+                name: app-secrets
           ports:
             - containerPort: 3000
           livenessProbe:
