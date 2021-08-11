@@ -4,4 +4,4 @@ secretfile filter=git-crypt diff=git-crypt
 
 # Kubernetes settings
 kubernetes/development/*secrets* filter=git-crypt diff=git-crypt
-kubernetes/production/*secrets* filter=git-crypt diff=git-crypt
+kubernetes/production/secrets.yaml filter=git-crypt diff=git-crypt
