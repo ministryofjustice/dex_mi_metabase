@@ -29,7 +29,7 @@ spec:
           - name: MB_DB_CONNECTION_URI
             valueFrom:
               secretKeyRef:
-                name: dex-mi-production-metabase-rds-output
+                name: dex-mi-production-rds-output
                 key: url
           envFrom:
             - configMapRef:
