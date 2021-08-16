@@ -1,4 +1,7 @@
 -- warehouse_case_report_for_offender_sar_related
+ DROP view if exists offender_data_requests_volume_view;
+ DROP view if exists offender_subject_type_volume_view;
+ DROP view if exists offender_sar_vetting_track_view;
  DROP view if exists warehouse_case_report_for_offender_sar_related;
  CREATE view warehouse_case_report_for_offender_sar_related as
  SELECT warehouse_case_reports.case_id,
@@ -42,7 +45,6 @@
 
 
  -- offender_data_requests_volume_view
- DROP view if exists offender_data_requests_volume_view;
  CREATE view  offender_data_requests_volume_view as
  SELECT stats_base_categories.request_type,
     stats_base_categories.stats_month,
@@ -75,7 +77,6 @@
 
 
 -- offender_subject_type_volume_view
- DROP view if exists offender_subject_type_volume_view;
  CREATE view offender_subject_type_volume_view as
  SELECT stats_base_categories.sar_subject_type,
     stats_base_categories.stats_month,
@@ -111,7 +112,6 @@
           ORDER BY (date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received)), (date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received))) stats_previous_year ON stats_base_categories.sar_subject_type = stats_previous_year.sar_subject_type::text AND stats_base_categories.stats_month::double precision = stats_previous_year.stats_month AND stats_base_categories.requester_type = stats_previous_year.requester_from;
 
 -- offender_sar_vetting_track_view
- DROP view if exists offender_sar_vetting_track_view;
  CREATE view offender_sar_vetting_track_view as
  SELECT data_request_pages_received.case_id,
     data_request_pages_received.total_page_received,
