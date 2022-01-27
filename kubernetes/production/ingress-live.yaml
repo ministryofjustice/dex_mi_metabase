@@ -11,14 +11,14 @@ metadata:
       location ~* \.(php|cgi)$ {
         deny all; access_log off;
       }
-    external-dns.alpha.kubernetes.io/set-identifier: dex-mi-production-metabase-ingress-dex-mi-production-blue
-    external-dns.alpha.kubernetes.io/aws-weight: "0"
+    external-dns.alpha.kubernetes.io/set-identifier: dex-mi-production-metabase-ingress-dex-mi-production-green
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
 spec:
   tls:
   - hosts:
-    - dex-mi-production.apps.live-1.cloud-platform.service.justice.gov.uk
+    - dex-mi-production.apps.live.cloud-platform.service.justice.gov.uk
   rules:
-  - host: dex-mi-production.apps.live-1.cloud-platform.service.justice.gov.uk
+  - host: dex-mi-production.apps.live.cloud-platform.service.justice.gov.uk
     http:
       paths:
       - path: /
