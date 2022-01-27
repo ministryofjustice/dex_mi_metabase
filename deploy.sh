@@ -94,7 +94,7 @@ function _deploy() {
   kubectl apply \
     -f kubernetes/${environment}/deployment.yaml \
     -f kubernetes/${environment}/service.yaml \
-    -f kubernetes/${environment}/ingress.yaml \
+    -f kubernetes/${environment}/ingress-live.yaml \
     -f kubernetes/${environment}/secrets.yaml \
     -n dex-mi-production
 }
