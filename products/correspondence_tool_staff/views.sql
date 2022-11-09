@@ -1,8 +1,52 @@
--- warehouse_case_report_for_offender_sar_related
  DROP view if exists offender_data_requests_volume_view;
  DROP view if exists offender_subject_type_volume_view;
  DROP view if exists offender_sar_vetting_track_view;
  DROP view if exists warehouse_case_report_for_offender_sar_related;
+ DROP view if exists warehouse_case_report_for_london_disclosure_related;
+
+-- warehouse_case_report_for_london_disclosure_related
+ CREATE view warehouse_case_report_for_london_disclosure_related as
+ SELECT warehouse_case_reports.case_id,
+    warehouse_case_reports.created_at,
+    warehouse_case_reports.updated_at,
+    warehouse_case_reports.creator_id,
+    warehouse_case_reports.responding_team_id,
+    warehouse_case_reports.responder_id,
+    warehouse_case_reports.number,
+    warehouse_case_reports.case_type,
+    warehouse_case_reports.current_state,
+    warehouse_case_reports.responding_team,
+    warehouse_case_reports.responder,
+    warehouse_case_reports.date_received,
+    warehouse_case_reports.external_deadline,
+    warehouse_case_reports.date_responded,
+    warehouse_case_reports.outcome,
+    warehouse_case_reports.appeal_outcome,
+    warehouse_case_reports.third_party,
+    warehouse_case_reports.sar_subject_type,
+    warehouse_case_reports.created_by,
+    warehouse_case_reports.in_target,
+    warehouse_case_reports.user_dealing_with_vetting,
+    warehouse_case_reports.number_of_days_for_vetting,
+    warehouse_case_reports.number_of_days_late,
+    warehouse_case_reports.number_of_days_taken,
+    warehouse_case_reports.number_of_exempt_pages,
+    warehouse_case_reports.number_of_final_pages,
+    warehouse_case_reports.third_party_company_name,
+    warehouse_case_reports.complaint_subtype,
+    warehouse_case_reports.priority,
+    warehouse_case_reports.total_cost,
+    warehouse_case_reports.settlement_cost,
+    warehouse_case_reports.request_method,
+        CASE
+            WHEN warehouse_case_reports.third_party_company_name IS NULL THEN 'Data subject'::text
+            WHEN warehouse_case_reports.third_party_company_name::text = ''::text THEN 'Data subject'::text
+            ELSE 'Third party'::text
+        END AS requester_from
+   FROM warehouse_case_reports
+  WHERE warehouse_case_reports.case_type::text = ANY (ARRAY['FOI'::character varying::text, 'SAR'::character varying::text]);
+
+-- warehouse_case_report_for_offender_sar_related
  CREATE view warehouse_case_report_for_offender_sar_related as
  SELECT warehouse_case_reports.case_id,
     warehouse_case_reports.created_at,
