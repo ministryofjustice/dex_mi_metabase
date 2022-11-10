@@ -44,7 +44,8 @@
             ELSE 'Third party'::text
         END AS requester_from
    FROM warehouse_case_reports
-  WHERE warehouse_case_reports.case_type::text = ANY (ARRAY['FOI'::character varying::text, 'SAR'::character varying::text]);
+  WHERE warehouse_case_reports.case_type::text = ANY (ARRAY['FOI'::character varying::text, 'SAR'::character varying::text, 'ICO appeal (SAR)'::character varying::text, 'ICO appeal (FOI)'::character varying::text, 'ICO overturned (FOI)'::character varying::text, 'ICO overturned (SAR)'::character varying::text, 'SAR Internal Review - compliance'::character varying::text, 'SAR Internal Review - timeliness'::character varying::text, 'FOI - Internal review for compliance'::character varying::text, 'FOI - Internal review for timeliness'::character varying::text]);
+
 
 -- warehouse_case_report_for_offender_sar_related
  CREATE view warehouse_case_report_for_offender_sar_related as
