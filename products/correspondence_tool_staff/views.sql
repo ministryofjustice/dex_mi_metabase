@@ -35,6 +35,7 @@
     warehouse_case_reports.priority,
     warehouse_case_reports.total_cost,
     warehouse_case_reports.settlement_cost,
+    warehouse_case_reports.request_method,
         CASE
             WHEN warehouse_case_reports.third_party_company_name IS NULL THEN 'Data subject'::text
             WHEN warehouse_case_reports.third_party_company_name::text = ''::text THEN 'Data subject'::text
