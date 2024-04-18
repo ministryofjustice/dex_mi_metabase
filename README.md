@@ -12,7 +12,41 @@
 
 </div>
 
-Repository for tools and scripts relating to CDPT Metabase installation
+Repository for tools and scripts relating to CDPT Metabase installation. Currently used as an MI tool for Correspondence Tool.
+
+## Metabase
+
+The production installation is accessible at https://dex-mi-production.apps.live.cloud-platform.service.justice.gov.uk/.
+
+### Data available
+
+The metabase installation has readonly connections to:
+- Correspondence Tool QA
+- Correspondence Tool Production
+- Peoplefinder Production
+
+The metabase user only has permissions to access certain tables and views
+
+### Data updates
+
+Metabase has a live connection to the databases, but manual work is required to make new types of data available to Metabase.
+
+For Correspondence Tool, warehouse tables have been created to be used by Metabase that contains no PII. This table may need updating to add new types of case data.
+
+1. Update SQL script to add in new data e.g. https://github.com/ministryofjustice/dex_mi_metabase/blob/main/products/correspondence_tool_staff/views.sql
+2. Connect to the relevant database via kubectl (see below)
+3. Copy and paste the updated SQL and run.
+4. Sync database schema and re-scan fields in Metabase
+
+#### Connect to database
+
+Example to connect to Correspondence Tool QA database:
+
+1. `kubectl exec -it [pod-id] -n track-a-query-qa -- ash`
+2. `bundle exec rails database`
+3. Get password from kubernetes secret e.g. `cloud-platform decode-secret -s track-a-query-rds-output -n track-a-query-qa`
+4. Paste SQL and run
+
 
 ## TODO list
 - Create a docker image based on the metabase image, then we can install some tools we want for our own usage
