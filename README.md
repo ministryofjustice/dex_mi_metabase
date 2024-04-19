@@ -12,13 +12,13 @@
 
 </div>
 
-Repository for tools and scripts relating to CDPT Metabase installation. Currently used as an MI tool for Correspondence Tool.
+Repository for tools and scripts relating to CDPT Metabase installation. Currently used to analyse information and generate customisable reports for Correspondence Tool.
 
-## Metabase
+---
 
 The production installation is accessible at https://dex-mi-production.apps.live.cloud-platform.service.justice.gov.uk/.
 
-### Data available
+## Data available
 
 The metabase installation has readonly connections to:
 - Correspondence Tool QA
@@ -27,7 +27,7 @@ The metabase installation has readonly connections to:
 
 The metabase user only has permissions to access certain tables and views
 
-### Data updates
+## Data updates
 
 Metabase has a live connection to the databases, but manual work is required to make new types of data available to Metabase.
 
@@ -38,12 +38,12 @@ For Correspondence Tool, warehouse tables have been created to be used by Metaba
 3. Copy and paste the updated SQL and run.
 4. Sync database schema and re-scan fields in Metabase
 
-#### Connect to database
+### Connect to database
 
 Example to connect to Correspondence Tool QA database:
 
 1. `kubectl exec -it [pod-id] -n track-a-query-qa -- ash`
-2. `bundle exec rails database`
+2. `bundle exec rails db`
 3. Get password from kubernetes secret e.g. `cloud-platform decode-secret -s track-a-query-rds-output -n track-a-query-qa`
 4. Paste SQL and run
 
@@ -53,5 +53,3 @@ Example to connect to Correspondence Tool QA database:
 - Write a script to export/import the dashboard and reports from different servers
 - Add a monitor dashboard for tracking the metabase memory usage and user request
   will set up alerts too
-
--
