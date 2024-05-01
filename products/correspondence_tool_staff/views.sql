@@ -92,7 +92,7 @@
             ELSE 'Third party'::text
         END AS requester_from
    FROM warehouse_case_reports
-  WHERE warehouse_case_reports.case_type::text = ANY (ARRAY['Offender SAR'::character varying::text, 'Complaint - Standard'::character varying::text, 'Complaint - ICO'::character varying::text, 'Complaint - Litigation'::character varying::text]);
+  WHERE warehouse_case_reports.case_type::text = ANY (ARRAY['Offender SAR'::character varying::text, 'Rejected Offender SAR'::character varying::text, 'Complaint - Standard'::character varying::text, 'Complaint - ICO'::character varying::text, 'Complaint - Litigation'::character varying::text]);
 
 
  -- offender_data_requests_volume_view
