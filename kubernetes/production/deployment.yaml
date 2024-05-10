@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: webapp
-          image: metabase/metabase:v0.41.9
+          image: metabase/metabase:v0.49.9
           imagePullPolicy: IfNotPresent
           env:
           - name: MB_DB_TYPE
