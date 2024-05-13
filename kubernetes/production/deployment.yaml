@@ -21,8 +21,10 @@ spec:
     spec:
       containers:
         - name: webapp
-          image: metabase/metabase:v0.49.9
+          image: metabase/metabase:v0.48.12
           imagePullPolicy: IfNotPresent
+          # Set this if an upgrade ever fails and you need to downgrade
+          # args: ["migrate down"]
           env:
           - name: MB_DB_TYPE
             value: "postgres"
@@ -55,4 +57,3 @@ spec:
       securityContext:
         runAsUser: 1000
         fsGroup: 1000
-          
