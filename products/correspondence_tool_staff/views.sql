@@ -106,7 +106,7 @@
             b.request_type
            FROM ( SELECT to_char(generate_series(to_char(CURRENT_DATE::timestamp with time zone, 'YYYY-01-01'::text)::timestamp without time zone, CURRENT_DATE::timestamp without time zone, '1 mon'::interval), 'MM'::text)::integer AS stats_month) a
              CROSS JOIN ( SELECT t.request_type
-                   FROM ( VALUES ('all_prison_records'::text), ('security_records'::text), ('nomis_records'::text), ('nomis_other'::text), ('nomis_contact_logs'::text), ('probation_records'::text), ('cctv_and_bwcf'::text), ('telephone_recordings'::text), ('telephone_pin_logs'::text), ('probation_archive'::text), ('mappa'::text), ('pdp'::text), ('court'::text), ('other'::text)) t(request_type)) b) stats_base_categories
+                   FROM ( VALUES ('all_prison_records'::text), ('security_records'::text), ('nomis_records'::text), ('nomis_other'::text), ('nomis_contact_logs'::text), ('probation_records'::text), ('cctv_and_bwcf'::text), ('telephone_recordings'::text), ('telephone_pin_logs'::text), ('probation_archive'::text), ('mappa'::text), ('pdp'::text), ('court'::text), ('dps'::text), ('other'::text)) t(request_type)) b) stats_base_categories
      LEFT JOIN ( SELECT data_requests.request_type,
             date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received) AS stats_year,
             date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received) AS stats_month,
