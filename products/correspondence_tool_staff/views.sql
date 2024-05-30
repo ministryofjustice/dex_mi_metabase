@@ -1,5 +1,5 @@
  DROP view if exists offender_data_requests_volume_view;
- DROP view if exists offender_subject_type_volume_view;
+ DROP view if exists offender_subject_type_volume_exclude_rejected_case_view;
  DROP view if exists offender_sar_vetting_track_view;
  DROP view if exists warehouse_case_report_for_offender_sar_related;
  DROP view if exists warehouse_case_report_for_london_disclosure_related;
@@ -127,8 +127,8 @@
           ORDER BY (date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received)), (date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received))) stats_previous_year ON stats_base_categories.request_type = stats_previous_year.request_type::text AND stats_base_categories.stats_month::double precision = stats_previous_year.stats_month;
 
 
--- offender_subject_type_volume_view
- CREATE view offender_subject_type_volume_view as
+-- offender_subject_type_volume_exclude_rejected_case_view
+ CREATE view offender_subject_type_volume_exclude_rejected_case_view as
  SELECT stats_base_categories.sar_subject_type,
     stats_base_categories.stats_month,
     concat(stats_base_categories.stats_month, ' - ', to_char(to_date(stats_base_categories.stats_month::text, 'MM'::text)::timestamp with time zone, 'Month'::text)) AS "Month Name",
