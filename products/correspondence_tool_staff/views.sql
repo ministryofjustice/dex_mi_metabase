@@ -184,7 +184,7 @@
             date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received) AS stats_month,
             count(warehouse_case_report_for_offender_sar_related.case_id) AS current_year_volume
            FROM warehouse_case_report_for_offender_sar_related
-          WHERE date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received) = date_part('year'::text, CURRENT_DATE) AND warehouse_case_report_for_offender_sar_related.case_type::text = 'Offender SAR'::text AND warehouse_case_report_for_offender_sar_related.rejected::text = 'No'::text
+          WHERE date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received) = date_part('year'::text, CURRENT_DATE) AND warehouse_case_report_for_offender_sar_related.case_type::text = 'Offender SAR'::text
           GROUP BY warehouse_case_report_for_offender_sar_related.sar_subject_type, (date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received)), (date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received)), warehouse_case_report_for_offender_sar_related.requester_from
           ORDER BY (date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received)), (date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received))) stats_current_year ON stats_base_categories.sar_subject_type = stats_current_year.sar_subject_type::text AND stats_base_categories.stats_month::double precision = stats_current_year.stats_month AND stats_base_categories.requester_type = stats_current_year.requester_from
      LEFT JOIN ( SELECT warehouse_case_report_for_offender_sar_related.sar_subject_type,
@@ -193,7 +193,7 @@
             date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received) AS stats_month,
             count(warehouse_case_report_for_offender_sar_related.case_id) AS previous_year_volume
            FROM warehouse_case_report_for_offender_sar_related
-          WHERE date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received) = (date_part('year'::text, CURRENT_DATE) - 1::double precision) AND warehouse_case_report_for_offender_sar_related.case_type::text = 'Offender SAR'::text AND warehouse_case_report_for_offender_sar_related.rejected::text = 'No'::text
+          WHERE date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received) = (date_part('year'::text, CURRENT_DATE) - 1::double precision) AND warehouse_case_report_for_offender_sar_related.case_type::text = 'Offender SAR'::text
           GROUP BY warehouse_case_report_for_offender_sar_related.sar_subject_type, (date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received)), (date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received)), warehouse_case_report_for_offender_sar_related.requester_from
           ORDER BY (date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received)), (date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received))) stats_previous_year ON stats_base_categories.sar_subject_type = stats_previous_year.sar_subject_type::text AND stats_base_categories.stats_month::double precision = stats_previous_year.stats_month AND stats_base_categories.requester_type = stats_previous_year.requester_from;
 
