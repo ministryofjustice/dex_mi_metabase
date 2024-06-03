@@ -1,4 +1,4 @@
- DROP view if exists offender_data_requests_volume_view;
+ DROP view if exists offender_data_request_volume_exclude_rejected_case_view;
  DROP view if exists offender_subject_type_volume_rejected_case_view;
  DROP view if exists offender_subject_type_volume_exclude_rejected_case_view;
  DROP view if exists offender_sar_vetting_track_view;
@@ -96,8 +96,8 @@
   WHERE warehouse_case_reports.case_type::text = ANY (ARRAY['Offender SAR'::character varying::text, 'Rejected Offender SAR'::character varying::text, 'Complaint - Standard'::character varying::text, 'Complaint - ICO'::character varying::text, 'Complaint - Litigation'::character varying::text]);
 
 
- -- offender_data_requests_volume_view
- CREATE view  offender_data_requests_volume_view as
+ -- offender_data_request_volume_exclude_rejected_case_view
+ CREATE view  offender_data_request_volume_exclude_rejected_case_view as
  SELECT stats_base_categories.request_type,
     stats_base_categories.stats_month,
     concat(stats_base_categories.stats_month, ' - ', to_char(to_date(stats_base_categories.stats_month::text, 'MM'::text)::timestamp with time zone, 'Month'::text)) AS "Month Name",
