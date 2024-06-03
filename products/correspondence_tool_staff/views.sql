@@ -1,5 +1,6 @@
  DROP view if exists offender_data_requests_volume_view;
- DROP view if exists offender_subject_type_volume_view;
+ DROP view if exists offender_subject_type_volume_rejected_case_view;
+ DROP view if exists offender_subject_type_volume_exclude_rejected_case_view;
  DROP view if exists offender_sar_vetting_track_view;
  DROP view if exists warehouse_case_report_for_offender_sar_related;
  DROP view if exists warehouse_case_report_for_london_disclosure_related;
@@ -126,9 +127,43 @@
           GROUP BY data_requests.request_type, (date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received)), (date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received))
           ORDER BY (date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received)), (date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received))) stats_previous_year ON stats_base_categories.request_type = stats_previous_year.request_type::text AND stats_base_categories.stats_month::double precision = stats_previous_year.stats_month;
 
+ -- offender_subject_type_volume_rejected_case_view
+ CREATE view offender_subject_type_volume_rejected_case_view as
+ SELECT stats_base_categories.sar_subject_type,
+        stats_base_categories.stats_month,
+        concat(stats_base_categories.stats_month, ' - ', to_char(to_date(stats_base_categories.stats_month::text, 'MM'::text)::timestamp with time zone, 'Month'::text)) AS "Month Name",
+        stats_base_categories.requester_type,
+        stats_current_year.current_year_volume,
+        stats_previous_year.previous_year_volume
+ FROM ( SELECT a.stats_month,
+               b.sar_subject_type,
+               c.requester_type
+        FROM ( SELECT to_char(generate_series(to_char(CURRENT_DATE::timestamp with time zone, 'YYYY-01-01'::text)::timestamp without time zone, CURRENT_DATE::timestamp without time zone, '1 mon'::interval), 'MM'::text)::integer AS stats_month) a
+                 CROSS JOIN ( SELECT t.sar_subject_type
+                              FROM ( VALUES ('Offender'::text), ('Ex offender'::text), ('Detainee'::text), ('Ex detainee'::text), ('Probation service user'::text), ('Ex probation service user'::text)) t(sar_subject_type)) b
+                 CROSS JOIN ( SELECT t.requester_type
+                              FROM ( VALUES ('Third party'::text), ('Data subject'::text)) t(requester_type)) c) stats_base_categories
+          LEFT JOIN ( SELECT warehouse_case_report_for_offender_sar_related.sar_subject_type,
+                             warehouse_case_report_for_offender_sar_related.requester_from,
+                             date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received) AS stats_year,
+                             date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received) AS stats_month,
+                             count(warehouse_case_report_for_offender_sar_related.case_id) AS current_year_volume
+                      FROM warehouse_case_report_for_offender_sar_related
+                      WHERE date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received) = date_part('year'::text, CURRENT_DATE) AND warehouse_case_report_for_offender_sar_related.rejected::text = 'Yes'::text
+                      GROUP BY warehouse_case_report_for_offender_sar_related.sar_subject_type, (date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received)), (date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received)), warehouse_case_report_for_offender_sar_related.requester_from
+                      ORDER BY (date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received)), (date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received))) stats_current_year ON stats_base_categories.sar_subject_type = stats_current_year.sar_subject_type::text AND stats_base_categories.stats_month::double precision = stats_current_year.stats_month AND stats_base_categories.requester_type = stats_current_year.requester_from
+     LEFT JOIN ( SELECT warehouse_case_report_for_offender_sar_related.sar_subject_type,
+            warehouse_case_report_for_offender_sar_related.requester_from,
+            date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received) AS stats_year,
+            date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received) AS stats_month,
+            count(warehouse_case_report_for_offender_sar_related.case_id) AS previous_year_volume
+           FROM warehouse_case_report_for_offender_sar_related
+          WHERE date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received) = (date_part('year'::text, CURRENT_DATE) - 1::double precision) AND warehouse_case_report_for_offender_sar_related.rejected::text = 'Yes'::text
+          GROUP BY warehouse_case_report_for_offender_sar_related.sar_subject_type, (date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received)), (date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received)), warehouse_case_report_for_offender_sar_related.requester_from
+          ORDER BY (date_part('year'::text, warehouse_case_report_for_offender_sar_related.date_received)), (date_part('month'::text, warehouse_case_report_for_offender_sar_related.date_received))) stats_previous_year ON stats_base_categories.sar_subject_type = stats_previous_year.sar_subject_type::text AND stats_base_categories.stats_month::double precision = stats_previous_year.stats_month AND stats_base_categories.requester_type = stats_previous_year.requester_from;
 
--- offender_subject_type_volume_view
- CREATE view offender_subject_type_volume_view as
+ -- offender_subject_type_volume_exclude_rejected_case_view
+ CREATE view offender_subject_type_volume_exclude_rejected_case_view as
  SELECT stats_base_categories.sar_subject_type,
     stats_base_categories.stats_month,
     concat(stats_base_categories.stats_month, ' - ', to_char(to_date(stats_base_categories.stats_month::text, 'MM'::text)::timestamp with time zone, 'Month'::text)) AS "Month Name",
