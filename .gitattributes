@@ -1,7 +1,0 @@
-# General keys
-secretfile filter=git-crypt diff=git-crypt
-*.key filter=git-crypt diff=git-crypt
-
-# Kubernetes settings
-kubernetes/development/*secrets* filter=git-crypt diff=git-crypt
-kubernetes/production/secrets.yaml filter=git-crypt diff=git-crypt
