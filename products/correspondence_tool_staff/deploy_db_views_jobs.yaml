@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: deploy-db-views-job
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      containers:
+        - name: deploy-db-views
+          image: bitnami/postgresql:12
+          command: ["./products/correspondence_tool_staff/entrypoint.sh"]
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: track-a-query-rds-output
+                  key: url
+          imagePullPolicy: Always
+      restartPolicy: OnFailure
