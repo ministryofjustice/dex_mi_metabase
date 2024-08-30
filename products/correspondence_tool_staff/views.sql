@@ -87,6 +87,7 @@
     warehouse_case_reports.case_originally_rejected,
     warehouse_case_reports.rejected_reasons,
     warehouse_case_reports.other_rejected_reason,
+    warehouse_case_reports.user_made_valid,
         CASE
             WHEN warehouse_case_reports.third_party_company_name IS NULL THEN 'Data subject'::text
             WHEN warehouse_case_reports.third_party_company_name::text = ''::text THEN 'Data subject'::text
