@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dex-mi-staging-metabase-ingress-modsec
+  namespace: dex-mi-staging
+  annotations:
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location = /.well-known/security.txt {
+        return 301 https://raw.githubusercontent.com/ministryofjustice/security-guidance/main/contact/vulnerability-disclosure-security.txt;
+      }
+      location ~* \.(php|cgi)$ {
+        deny all; access_log off;
+      }
+    external-dns.alpha.kubernetes.io/set-identifier: dex-mi-staging-metabase-ingress-modsec-dex-mi-staging-green
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
+    nginx.ingress.kubernetes.io/modsecurity-snippet: |
+      SecAuditEngine On
+      SecRuleEngine DetectionOnly
+      SecDefaultAction "phase:2,pass,log,tag:github_team=central-digital-product-team,tag:namespace=dex-mi-staging"
+spec:
+  ingressClassName: modsec
+  tls:
+  - hosts:
+    - dex-mi-staging.apps.live.cloud-platform.service.justice.gov.uk
+  rules:
+  - host: dex-mi-staging.apps.live.cloud-platform.service.justice.gov.uk
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: dex-mi-staging-metabase-service
+            port:
+              number: 3000
