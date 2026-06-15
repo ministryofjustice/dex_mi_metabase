@@ -16,14 +16,14 @@ function _deploy() {
   usage="deploy -- deploy image from ECR to an environment
   Usage: ./deploy.sh environment
   Where:
-    environment - one of development|production
+    environment - one of staging|production
   Example:
     # build the app to get an image tag
     ./build.sh
     ...many lines of output...
 
-    # deploy development
-    ./deploy.sh development
+    # deploy staging
+    ./deploy.sh staging
 
     # deploy production
     ./deploy.sh production
@@ -38,12 +38,12 @@ function _deploy() {
   
   # Ensure that the second argument is a valid stage
   case "$1" in
-    development | production)
+    staging | production)
       environment=$1
       ;;
     *)
       p "\e[31mFatal error: deployment environment not recognised: $2\e[0m"
-      p "\e[31mEnvironment must be one of development | production\e[0m\n"
+      p "\e[31mEnvironment must be one of staging | production\e[0m\n"
       echo "$usage"
       return 1
       ;;
@@ -90,13 +90,18 @@ function _deploy() {
   kubectl apply \
     -f kubernetes/${environment}/configmap.yaml -n $namespace
 
-  # Apply non-image specific config
+ # Apply non-image specific config
+  secrets_arg=""
+  if [ -f "kubernetes/${environment}/secrets.yaml" ]; then
+    secrets_arg="-f kubernetes/${environment}/secrets.yaml"
+  fi
+
   kubectl apply \
     -f kubernetes/${environment}/deployment.yaml \
     -f kubernetes/${environment}/service.yaml \
     -f kubernetes/${environment}/ingress-live.yaml \
     -f kubernetes/${environment}/secrets.yaml \
-    -n dex-mi-production
+    -n $namespace
 }
 
 _deploy $@
