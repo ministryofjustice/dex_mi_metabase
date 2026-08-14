@@ -13,10 +13,15 @@ function _deploy() {
   component=dex-mi
   context='live-1'
 
+  # Single source of truth for the Metabase image tag, substituted into
+  # kubernetes/${environment}/deployment.yaml below.
+  export METABASE_VERSION=$(cat .metabase_version)
+
   usage="deploy -- deploy image from ECR to an environment
   Usage: ./deploy.sh environment
   Where:
     environment - one of staging|production
+  Requires: kubectl, envsubst (part of the gettext package)
   Example:
     # build the app to get an image tag
     ./build.sh
@@ -96,8 +101,10 @@ function _deploy() {
     secrets_arg="-f kubernetes/${environment}/secrets.yaml"
   fi
 
+  # deployment.yaml references ${METABASE_VERSION}; substitute it before applying
+  envsubst '${METABASE_VERSION}' < kubernetes/${environment}/deployment.yaml | kubectl apply -f - -n $namespace
+
   kubectl apply \
-    -f kubernetes/${environment}/deployment.yaml \
     -f kubernetes/${environment}/service.yaml \
     -f kubernetes/${environment}/ingress-live.yaml \
     -f kubernetes/${environment}/secrets.yaml \

@@ -48,6 +48,50 @@ Example to connect to Correspondence Tool QA database:
 4. Paste SQL and run
 
 
+## Local setup
+
+A local Metabase instance with a Postgres database of synthetic sample data (mimicking the Correspondence Tool warehouse tables) can be run via Docker Compose.
+
+1. Create the external network and volumes (first time only):
+   ```
+   docker network create dex-mi-net
+   docker volume create dex-mi-metabase-data
+   docker volume create dex-mi-postgres-sample-data
+   ```
+2. Start the stack (the Metabase image tag is read from [`.metabase_version`](.metabase_version), the single source of truth also used by the Kubernetes manifests):
+   ```
+   export METABASE_VERSION=$(cat .metabase_version)
+   docker compose -f local/docker-compose.yml up -d
+   ```
+3. Metabase will be available at http://localhost:3001 (port 3000 is assumed to be taken by a local Rails dev server; change the port mapping in `local/docker-compose.yml` if needed).
+4. Postgres is available on `localhost:5433` (db `track_a_query_sample`, user/password `metabase`/`metabase`). The sample data in `local/sample_data.sql` is only loaded automatically on the first boot of a fresh `dex-mi-postgres-sample-data` volume.
+5. On a fresh `dex-mi-metabase-data` volume, run the setup script to skip Metabase's setup wizard and preconfigure an admin account plus a database connection to the sample Postgres data:
+   ```
+   ./local/setup-metabase.sh
+   ```
+   This creates the admin account below and adds a "Local Sample Data" database connection (host `postgres`, port `5432`). It's a no-op if an admin account already exists. Requires `curl` and `jq`.
+
+   - URL: http://localhost:3001
+   - Email: `admin@localhost.local`
+   - Password: `MetabaseLocal123`
+
+   These are local-only throwaway credentials with no access to real data — override them with the `ADMIN_EMAIL` / `ADMIN_PASSWORD` env vars if desired.
+
+To reset everything and start from scratch:
+```
+docker compose -f local/docker-compose.yml down
+docker volume rm dex-mi-postgres-sample-data dex-mi-metabase-data
+docker volume create dex-mi-postgres-sample-data
+docker volume create dex-mi-metabase-data
+export METABASE_VERSION=$(cat .metabase_version)
+docker compose -f local/docker-compose.yml up -d
+./local/setup-metabase.sh
+```
+
+### Upgrading the Metabase version
+
+The image tag is defined once in [`.metabase_version`](.metabase_version) and consumed by `local/docker-compose.yml` and the Kubernetes deployment manifests (`kubernetes/staging/deployment.yaml`, `kubernetes/production/deployment.yaml`) via `${METABASE_VERSION}`. To upgrade, update `.metabase_version` — `deploy.sh` substitutes it into the Kubernetes manifests automatically at deploy time (via `envsubst`), and Docker Compose picks it up from the exported env var as above.
+
 ## TODO list
 - Create a docker image based on the metabase image, then we can install some tools we want for our own usage
 - Write a script to export/import the dashboard and reports from different servers
