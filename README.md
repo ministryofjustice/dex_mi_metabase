@@ -90,7 +90,35 @@ docker compose -f local/docker-compose.yml up -d
 
 ### Upgrading the Metabase version
 
-The image tag is defined once in [`.metabase_version`](.metabase_version) and consumed by `local/docker-compose.yml` and the Kubernetes deployment manifests (`kubernetes/staging/deployment.yaml`, `kubernetes/production/deployment.yaml`) via `${METABASE_VERSION}`. To upgrade, update `.metabase_version` — `deploy.sh` substitutes it into the Kubernetes manifests automatically at deploy time (via `envsubst`), and Docker Compose picks it up from the exported env var as above.
+The image tag is defined once in [`.metabase_version`](.metabase_version) and consumed by `local/docker-compose.yml` and the Kubernetes deployment manifests (`kubernetes/staging/deployment.yaml`, `kubernetes/production/deployment.yaml`) via `${METABASE_VERSION}`. To upgrade:
+
+1. Update `.metabase_version` to the new image tag.
+2. [Run the smoke test](#smoke-testing-a-metabase-image-update) to sanity-check the new image before deploying it anywhere.
+3. Commit `.metabase_version` and open a PR as normal.
+4. `deploy.sh` substitutes the tag into the Kubernetes manifests automatically at deploy time (via `envsubst`); Docker Compose picks it up from the exported env var as in [Local setup](#local-setup) above.
+
+### Smoke testing a Metabase image update
+
+[`local/smoke-test.sh`](local/smoke-test.sh) sanity-checks a Metabase image before you deploy it, by booting it in an isolated, throwaway stack and driving it through setup and a real database query. It's fully separate from your persistent local dev stack above — its own compose project, network, ports (`13001`/`15433`) and volumes — and tears everything down automatically when it finishes, pass or fail.
+
+What it checks, in order:
+1. The container starts and `/api/health` reports healthy.
+2. The running instance reports the expected version tag.
+3. The first-run setup wizard (admin account creation) completes successfully.
+4. A Postgres database connection can be added, synced, and queried end-to-end (runs a query against the sample `warehouse_case_reports` table).
+
+Requires `docker`, `curl`, and `jq`.
+
+To run it:
+```
+# smoke test the version currently in .metabase_version
+./local/smoke-test.sh
+
+# or smoke test a specific tag before writing it to .metabase_version
+./local/smoke-test.sh v0.55.24.1
+```
+
+On failure it prints the container logs and exits non-zero, leaving nothing behind to clean up.
 
 ## TODO list
 - Create a docker image based on the metabase image, then we can install some tools we want for our own usage
