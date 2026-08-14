@@ -1,0 +1,44 @@
+networks:
+  dex-mi-net:
+    name: dex-mi-net
+    external: true
+
+volumes:
+  dex-mi-metabase-data:
+    name: dex-mi-metabase-data
+    external: true
+  dex-mi-postgres-sample-data:
+    name: dex-mi-postgres-sample-data
+    external: true
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: dex-mi-postgres-local
+    environment:
+      POSTGRES_DB: track_a_query_sample
+      POSTGRES_USER: metabase
+      POSTGRES_PASSWORD: metabase
+    ports:
+      - "5433:5432"
+    volumes:
+      - dex-mi-postgres-sample-data:/var/lib/postgresql/data
+      # Only runs on first boot of a fresh volume (Postgres image behaviour).
+      - ./sample_data.sql:/docker-entrypoint-initdb.d/sample_data.sql:ro
+    networks:
+      - dex-mi-net
+
+  metabase:
+    image: metabase/metabase:${METABASE_VERSION}
+    container_name: dex-mi-metabase-local
+    environment:
+      MB_DB_FILE: /metabase-data/metabase.db
+    ports:
+      # 3000 is taken by a local Rails dev server on this machine, hence 3001.
+      - "3001:3000"
+    volumes:
+      - dex-mi-metabase-data:/metabase-data
+    networks:
+      - dex-mi-net
+    depends_on:
+      - postgres

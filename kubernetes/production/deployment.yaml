@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: webapp
-          image: metabase/metabase:v0.53.18
+          image: metabase/metabase:${METABASE_VERSION}
           imagePullPolicy: IfNotPresent
           # Set this if an upgrade ever fails and you need to downgrade
           # args: ["migrate down"]
