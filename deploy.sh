@@ -21,7 +21,7 @@ function _deploy() {
   Usage: ./deploy.sh environment
   Where:
     environment - one of staging|production
-  Requires: kubectl, envsubst (part of the gettext package)
+  Requires: kubectl, envsubst (part of the gettext package), curl, jq
   Example:
     # build the app to get an image tag
     ./build.sh
@@ -109,6 +109,10 @@ function _deploy() {
     -f kubernetes/${environment}/ingress-live.yaml \
     -f kubernetes/${environment}/secrets.yaml \
     -n $namespace
+
+  # Confirm the rollout actually landed the intended image before declaring victory
+  metabase_url="https://dex-mi-${environment}.apps.live.cloud-platform.service.justice.gov.uk"
+  ./local/verify-deploy.sh "$metabase_url" "$METABASE_VERSION"
 }
 
 _deploy $@
