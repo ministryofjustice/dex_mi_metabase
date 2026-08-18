@@ -42,3 +42,4 @@ services:
       - dex-mi-net
     depends_on:
       - postgres
+
