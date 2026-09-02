@@ -120,6 +120,18 @@ To run it:
 
 On failure it prints the container logs and exits non-zero, leaving nothing behind to clean up.
 
+### Verifying a deploy
+
+`deploy.sh` runs [`local/verify-deploy.sh`](local/verify-deploy.sh) automatically after every `kubectl apply`, polling the deployed instance's public `/api/health` and `/api/session/properties` endpoints until it's consistently reporting the version just deployed. This is read-only (no login, no state changes), so it's safe against staging or production.
+
+It's needed because production runs a zero-downtime rolling update (`maxUnavailable: 0`) across 2 replicas: `/api/health` stays green for the entire rollout since old pods keep serving traffic, so a single successful health check proves nothing about whether the new image actually landed. The script instead waits for 3 consecutive checks to agree on the expected version tag, which only happens once every old pod has been replaced.
+
+To run it standalone, e.g. to check a deploy that's already finished:
+```
+./local/verify-deploy.sh https://dex-mi-production.apps.live.cloud-platform.service.justice.gov.uk v0.58.24
+```
+Requires `curl` and `jq`.
+
 ## TODO list
 - Create a docker image based on the metabase image, then we can install some tools we want for our own usage
 - Write a script to export/import the dashboard and reports from different servers
