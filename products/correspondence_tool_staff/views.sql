@@ -92,7 +92,9 @@
             WHEN warehouse_case_reports.third_party_company_name IS NULL THEN 'Data subject'::text
             WHEN warehouse_case_reports.third_party_company_name::text = ''::text THEN 'Data subject'::text
             ELSE 'Third party'::text
-        END AS requester_from
+        END AS requester_from,
+    warehouse_case_reports.acknowledgement_deadline,
+    warehouse_case_reports.acknowledgement_sent_at
    FROM warehouse_case_reports
   WHERE warehouse_case_reports.case_type::text = ANY (ARRAY['Offender SAR'::character varying::text, 'Rejected Offender SAR'::character varying::text, 'Complaint - Standard'::character varying::text, 'Complaint - ICO'::character varying::text, 'Complaint - Litigation'::character varying::text]);
 

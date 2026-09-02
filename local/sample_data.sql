@@ -43,7 +43,9 @@ CREATE TABLE warehouse_case_reports (
     case_originally_rejected varchar(3),
     rejected_reasons varchar(200),
     other_rejected_reason varchar(200),
-    user_made_valid varchar(80)
+    user_made_valid varchar(80),
+    acknowledgement_deadline date,
+    acknowledgement_sent_at timestamp
 );
 
 CREATE TABLE data_requests (
@@ -70,7 +72,8 @@ INSERT INTO warehouse_case_reports (
     number_of_exempt_pages, number_of_final_pages, third_party_company_name,
     complaint_subtype, priority, total_cost, settlement_cost, request_method,
     sent_to_sscl, rejected, case_originally_rejected, rejected_reasons,
-    other_rejected_reason, user_made_valid
+    other_rejected_reason, user_made_valid,
+    acknowledgement_deadline, acknowledgement_sent_at
 )
 SELECT
     gs AS case_id,
