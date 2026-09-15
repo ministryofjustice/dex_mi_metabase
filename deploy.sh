@@ -107,7 +107,7 @@ function _deploy() {
   kubectl apply \
     -f kubernetes/${environment}/service.yaml \
     -f kubernetes/${environment}/ingress-live.yaml \
-    -f kubernetes/${environment}/secrets.yaml \
+    $secrets_arg \
     -n $namespace
 }
 
